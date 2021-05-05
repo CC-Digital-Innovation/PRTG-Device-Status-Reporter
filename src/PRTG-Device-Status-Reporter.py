@@ -1,10 +1,11 @@
 import collections
-import configparser
 import csv
 import io
+import os
 import re
 import urllib.parse
 
+import configparser
 import pandas as pd
 import requests
 
@@ -14,7 +15,7 @@ __author__ = 'Anthony Farina'
 __copyright__ = 'Copyright 2021, PRTG Device Status Reporter'
 __credits__ = ['Anthony Farina']
 __license__ = 'MIT'
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __maintainer__ = 'Anthony Farina'
 __email__ = 'farinaanthony96@gmail.com'
 __status__ = 'Released'
@@ -22,7 +23,7 @@ __status__ = 'Released'
 
 # Global variables from the config file for easy referencing.
 CONFIG = configparser.ConfigParser()
-CONFIG.read('../config.ini')
+CONFIG.read(os.path.dirname(os.path.realpath(__file__)) + '/../config.ini')
 SERVER_URL = CONFIG['PRTG Info']['server-url']
 USERNAME = urllib.parse.quote_plus(CONFIG['PRTG Info']['username'])
 PASSWORD = urllib.parse.quote_plus(CONFIG['PRTG Info']['password'])
@@ -36,34 +37,17 @@ COL_LABELS = CONFIG['Output Info']['column-names'].replace('\n', '').split(',')
 # IPv4 address, and the ping sensor status for the device. It will output
 # this information to an Excel file.
 def prtg_device_reporter() -> None:
-    devices_url = ''
-    ping_url = ''
-
-    # Depending on whether the password or passhash will be used, prepare the
-    # URLs to get all devices and ping sensors from PRTG in CSV format. Add
-    # filtering into the URLs to get more specific devices / sensors.
-    if PASSHASH == '':
-        devices_url = SERVER_URL + \
-                      '/api/table.xml?content=devices' \
-                      '&columns=objid,host' \
-                      '&output=csvtable&count=50000' \
-                      '&username=' + USERNAME + '&password=' + PASSWORD
-        ping_url = SERVER_URL + \
-                   '/api/table.xml?content=sensors&filter_type=ping' \
-                   '&columns=group,device,status,parentid' \
-                   '&output=csvtable&count=50000' \
-                   '&username=' + USERNAME + '&password=' + PASSWORD
-    else:
-        devices_url = SERVER_URL + \
-                      '/api/table.xml?content=devices' \
-                      '&columns=objid,host' \
-                      '&output=csvtable&count=50000' \
-                      '&username=' + USERNAME + '&passhash=' + PASSHASH
-        ping_url = SERVER_URL + \
-                   '/api/table.xml?content=sensors&filter_type=ping' \
-                   '&columns=group,device,status,parentid' \
-                   '&output=csvtable&count=50000' \
-                   '&username=' + USERNAME + '&passhash=' + PASSHASH
+    # Prepare the URLs to get all devices and ping sensors from PRTG in CSV
+    # format. Add filtering into the URLs to get more specific devices /
+    # sensors.
+    devices_url = SERVER_URL + \
+                  '/api/table.xml?content=devices&columns=objid,host' \
+                  '&output=csvtable&count=50000&username=' + USERNAME
+    devices_url = add_auth(devices_url)
+    ping_url = SERVER_URL + '/api/table.xml?content=sensors&filter_type=ping' \
+                            '&columns=group,device,status,parentid' \
+                            '&output=csvtable&count=50000&username=' + USERNAME
+    ping_url = add_auth(ping_url)
 
     # Get the device information from PRTG and make a dictionary of them where
     # the key is the device's ID and the value is the device's IPv4 address.
@@ -129,6 +113,21 @@ def remove_raw(raw_df: pd.DataFrame) -> pd.DataFrame:
     # Return the dataframe object that only has desired columns.
     return_df = raw_df[col_labels]
     return return_df
+
+
+# This function will append the PRTG authentication to the end of the given
+# PRTG API call URL. It will append either the password or passhash,
+# whichever was provided in the config file. Passhash has priority if both
+# fields are filled in.
+def add_auth(url: str) -> str:
+    # Check if the password or passhash will be used to authenticate the
+    # access to the PRTG instance.
+    if PASSHASH == '':
+        url = url + '&password=' + PASSWORD
+    else:
+        url = url + '&passhash=' + PASSHASH
+
+    return url
 
 
 # The main method that runs the script. There are no input arguments.
