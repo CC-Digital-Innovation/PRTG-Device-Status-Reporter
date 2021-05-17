@@ -53,7 +53,13 @@ encounter any problems, please log an
 5. Submit a pull request ツ
 
 ## History
--  version 1.0.0 (initial release) - 2021/04/06
+-  version 1.0.1 - 2021/05/05
+     - Added authorization method to clean up code
+     - Made relative path for config.ini
+  
+
+-  version 1.0.0 - 2021/04/06
+     - (initial release)
 
 ## Credits
 Anthony Farina <<farinaanthony96@gmail.com>>

@@ -1,3 +1,4 @@
 configparser
+openpyxl
 pandas
 requests
