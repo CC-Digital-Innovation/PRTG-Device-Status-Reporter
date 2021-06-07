@@ -53,6 +53,12 @@ encounter any problems, please log an
 5. Submit a pull request ツ
 
 ## History
+-  version 1.0.2 - 2021/06/07
+     - Support for multiple config files
+     - "excel-file-name" field in the config file no longer needs to include
+       the relative path or file extension in it
+
+
 -  version 1.0.1 - 2021/05/05
      - Added authorization method to clean up code
      - Made relative path for config.ini
