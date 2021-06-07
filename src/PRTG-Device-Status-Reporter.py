@@ -23,7 +23,8 @@ __status__ = 'Released'
 
 # Global variables from the config file for easy referencing.
 CONFIG = configparser.ConfigParser()
-CONFIG.read(os.path.dirname(os.path.realpath(__file__)) + '/../config.ini')
+CONFIG_PATH = '/../configs/PRTG-Device-Status-Reporter-config.ini'
+CONFIG.read(os.path.dirname(os.path.realpath(__file__)) + CONFIG_PATH)
 SERVER_URL = CONFIG['PRTG Info']['server-url']
 USERNAME = urllib.parse.quote_plus(CONFIG['PRTG Info']['username'])
 PASSWORD = urllib.parse.quote_plus(CONFIG['PRTG Info']['password'])
@@ -91,7 +92,7 @@ def prtg_device_reporter() -> None:
 
     # Make output list into an Excel file.
     output_df = pd.DataFrame(output_list, columns=COL_LABELS)
-    output_df.to_excel(EXCEL_FILE_NAME, index=None, header=True)
+    output_df.to_excel('./../' + EXCEL_FILE_NAME + '.xlsx', index=None, header=True)
 
 
 # Every time table information is called from the PRTG API, the response has
