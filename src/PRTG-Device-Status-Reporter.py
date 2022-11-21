@@ -1,21 +1,21 @@
 import collections
+import configparser
 import csv
 import io
 import os
 import re
 import urllib.parse
 
-import configparser
 import pandas as pd
 import requests
 
 
 # Module information.
 __author__ = 'Anthony Farina'
-__copyright__ = 'Copyright 2021, PRTG Device Status Reporter'
+__copyright__ = 'Copyright 2022 Computacenter Digital Innovation'
 __credits__ = ['Anthony Farina']
 __license__ = 'MIT'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __maintainer__ = 'Anthony Farina'
 __email__ = 'farinaanthony96@gmail.com'
 __status__ = 'Released'
@@ -96,7 +96,7 @@ def prtg_device_reporter() -> None:
 
 
 # Every time table information is called from the PRTG API, the response has
-# 'readable' columns and 'raw' columns. Their are subtle differences,
+# 'readable' columns and 'raw' columns. There are subtle differences,
 # but the raw columns are not needed. This function removes all the 'raw'
 # columns from a dataframe object of the PRTG API response and returns a
 # dataframe object with only the non-raw columns.
@@ -133,5 +133,6 @@ def add_auth(url: str) -> str:
 
 # The main method that runs the script. There are no input arguments.
 if __name__ == '__main__':
+    # TODO - Add this script's functionality to the PRTG-FastAPI project?
     # Run the script.
     prtg_device_reporter()
